@@ -123,6 +123,7 @@
   const scrubs = $$(".statement[data-scrub]");
   const heroImg = $(".hero-media img");
   const heroTitle = $(".hero-title");
+  const toTop = $(".to-top .ring");
   let ticking = false;
   const onScroll = () => {
     const vh = innerHeight;
@@ -141,6 +142,9 @@
         if (heroTitle) heroTitle.style.transform = `translate3d(0, ${y * -0.12}px, 0)`;
       }
     }
+    const prog = Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - vh));
+    floatNav && floatNav.style.setProperty("--p", prog.toFixed(4));
+    toTop && toTop.style.setProperty("--p", prog.toFixed(4));
     scrubs.forEach((st) => {
       const r = st.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
@@ -173,6 +177,13 @@
       };
       requestAnimationFrame(step);
     });
+  });
+
+  /* images: drop the shimmer once each photo has decoded */
+  $$(".media > img").forEach((img) => {
+    const done = () => img.parentElement.classList.add("is-loaded");
+    if (img.complete && img.naturalWidth) done();
+    else { img.addEventListener("load", done, { once: true }); img.addEventListener("error", done, { once: true }); }
   });
 
   /* ---------------------------------------------------------- live widgets */
@@ -217,13 +228,32 @@
   /* ---------------------------------------------------- horizontal gallery */
   $$(".h-scroll").forEach((hs) => {
     const tr = $(".h-track", hs);
-    $$("[data-dir]", hs).forEach((b) => b.addEventListener("click", () => tr.scrollBy({ left: +b.dataset.dir * tr.clientWidth * 0.6, behavior: "smooth" })));
+    $$("[data-dir]", hs.closest("section") || hs).forEach((b) => b.addEventListener("click", () => tr.scrollBy({ left: +b.dataset.dir * tr.clientWidth * 0.6, behavior: "smooth" })));
     let down = false, sx = 0, sl = 0, moved = false;
     tr.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") return; down = true; moved = false; sx = e.clientX; sl = tr.scrollLeft; });
     addEventListener("pointermove", (e) => { if (!down) return; const dx = e.clientX - sx; if (Math.abs(dx) > 4) { moved = true; tr.classList.add("is-drag"); } tr.scrollLeft = sl - dx; });
     addEventListener("pointerup", () => { down = false; tr.classList.remove("is-drag"); });
     tr.addEventListener("click", (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
     tr.addEventListener("dragstart", (e) => e.preventDefault());
+  });
+
+  /* gallery progress rail + end-state buttons */
+  $$(".h-scroll").forEach((hs) => {
+    const tr = $(".h-track", hs), bar = $(".h-progress span", hs.parentElement);
+    const [prev, next] = $$("[data-dir]", hs.closest("section"));
+    const upd = () => {
+      const max = tr.scrollWidth - tr.clientWidth, p = max > 0 ? tr.scrollLeft / max : 0;
+      if (bar) {
+        const w = Math.max(12, (tr.clientWidth / tr.scrollWidth) * 100);
+        bar.style.setProperty("--w", w + "%");
+        bar.style.setProperty("--x", ((p * (100 - w)) / w) * 100 + "%");
+      }
+      if (prev) prev.disabled = tr.scrollLeft < 4;
+      if (next) next.disabled = tr.scrollLeft > max - 4;
+    };
+    tr.addEventListener("scroll", upd, { passive: true });
+    addEventListener("resize", upd);
+    upd();
   });
 
   /* -------------------------------------------------------------- filters */

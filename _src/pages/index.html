@@ -329,6 +329,7 @@
         <span class="eyebrow" style="color:rgba(255,255,255,.6)">Your energy spend</span>
         <label for="bill">Monthly bill (grid + fuel) <output for="bill">$250</output></label>
         <input class="range" id="bill" type="range" min="50" max="3000" step="10" value="250">
+        <div class="range-ticks" aria-hidden="true"><span>$50</span><span>$1,500</span><span>$3,000</span></div>
         <label style="margin-top:26px">I’m powering a</label>
         <div class="seg" role="group" aria-label="Property type">
           <button type="button" data-profile="home" aria-pressed="true">Home</button>
@@ -396,6 +397,7 @@
       </a>
       <span style="flex:none; width:var(--gutter)"></span>
     </div>
+    <div class="container"><div class="h-progress" aria-hidden="true"><span></span></div></div>
   </div>
 </section>
 
