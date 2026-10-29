@@ -17,6 +17,11 @@ const LINKS = [
 const ARROW = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ARROW_R = `<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 9h12M10.5 4.5L15 9l-4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
+// content hashes so every deploy busts browser caches for CSS/JS
+const crypto = require("crypto");
+const ver = (f) => crypto.createHash("md5").update(fs.readFileSync(path.join(ROOT, f))).digest("hex").slice(0, 8);
+const V_CSS = ver("assets/css/style.css"), V_JS = ver("assets/js/main.js");
+
 const cur = (nav, key) => (nav === key ? ' aria-current="page"' : "");
 
 const heroNav = (nav) => `
@@ -60,7 +65,7 @@ const layout = (meta, body) => `<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css?v=${V_CSS}">
 ${meta.preload ? `<link rel="preload" as="image" href="assets/img/photos/${meta.preload}.webp">` : ""}
 </head>
 <body class="is-loading">
@@ -149,7 +154,7 @@ ${body.replace("{{nav}}", heroNav(meta.nav)).replace(/\{\{cta:([^|}]+)\|([^|}]+)
   </div>
 </footer>
 <script>document.querySelectorAll("[data-year]").forEach(e=>e.textContent=new Date().getFullYear())</script>
-<script src="assets/js/main.js" defer></script>
+<script src="assets/js/main.js?v=${V_JS}" defer></script>
 </body>
 </html>
 `;
