@@ -28,7 +28,10 @@ const heroNav = (nav) => `
     <nav class="site-nav" aria-label="Primary">
       <a class="brand" href="index.html" aria-label="Smart Energy Solutions — home"><img src="assets/img/logo-white.webp" alt="Smart Energy Solutions" width="460" height="352"></a>
       <div class="nav-links">${LINKS.map(([k, h, t]) => `<a href="${h}"${cur(nav, k)}>${t}</a>`).join("")}</div>
-      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+      <div class="nav-mobile">
+        <a class="nav-pill" href="projects.html"${cur(nav, "projects")}><span class="thumbs" aria-hidden="true"><img src="assets/img/photos/proj-fitment-centre-rooftop.webp" alt="" width="711" height="450"><img src="assets/img/photos/proj-terracotta-residence.webp" alt="" width="711" height="450"></span>Projects</a>
+        <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+      </div>
     </nav>
     <div class="notch notch--tr">
       <a class="hero-cta" href="contact.html#quote" data-cursor="Let’s talk">Get a free quote <span class="circ">${ARROW}</span></a>
